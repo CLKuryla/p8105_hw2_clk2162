@@ -110,6 +110,9 @@ pols_snp_df <- left_join(pols_df, snp_df)
 
 pols_snp_unemployment_df <- left_join(pols_snp_df, unemployment_df)
 
+pols_snp_unemployment_df <- pols_snp_unemployment_df %>%
+  mutate(year = as.numeric(year))
+
 ```
 
-The dataset contains the following variables: `r colnames(pols_snp_unemployment_df)`
+The dataset contains the following variables: `r colnames(pols_snp_unemployment_df)`. It describes the date, the numbers of senators, governors, and representatives in each of the two parties democrat or repliacn (gop), as well as whether the president is democrat or replican, the snp closing numbers, and the unemployment numbers. The years range from `r min(pull(pols_snp_unemployment_df, year))` to `r max(pull(pols_snp_unemployment_df, year))`. 
