@@ -11,11 +11,13 @@ output: github_document
 library(tidyverse)
 ```
 
+Import and clean data from fivethirtyeight datasets of interest.
+
 ```{r}
 
-# Import and clean data from fivethirtyeight datasets for problem 1
+# Import and clean data from fivethirtyeight datasets pols-month
 
-pols_month_df <- read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+pols_df <- read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
   mutate(month = 
            case_match(
@@ -91,7 +93,23 @@ unemployment_df <- read_csv("./data/fivethirtyeight_datasets/unemployment.csv") 
              "oct" ~ "october",
              "nov" ~ "november",
              "dec" ~ "december",
-           )) 
+           )) %>% 
+  mutate(year = as.character(year)) # this is to enable the merge in the next step
 
 ```
+
+Join the datasets by mergine snp into pols, and merging unemployment into the result.
+
+```{r}
+
+# Merge snp_df into pols_df
+
+pols_snp_df <- left_join(pols_df, snp_df)
+
+# Merge unemployment data in as well
+
+pols_snp_unemployment_df <- left_join(pols_snp_df, unemployment_df)
+
+```
+
 
