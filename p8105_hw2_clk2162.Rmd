@@ -112,4 +112,4 @@ pols_snp_unemployment_df <- left_join(pols_snp_df, unemployment_df)
 
 ```
 
-
+The dataset contains the following variables: `r colnames(pols_snp_unemployment_df)`
