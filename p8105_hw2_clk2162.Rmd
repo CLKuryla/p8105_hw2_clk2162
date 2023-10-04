@@ -119,4 +119,43 @@ The dataset contains the following variables: `r colnames(pols_snp_unemployment_
 
 ## Problem 2
 
-Mr. Trashwheel!
+Mr. Trash Wheel!
+
+```{r}
+mr_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
+                                        sheet = "Mr. Trash Wheel",
+                                        range = "A2:N586") %>% 
+  janitor::clean_names() %>% 
+# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
+  mutate(homes_powered = weight_tons*500/30) %>% 
+  mutate(which_wheel = "Mr. Trash Wheel")
+
+prof_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
+                                        sheet = "Professor Trash Wheel",
+                                        range = "A2:M108") %>% 
+  janitor::clean_names() %>% 
+# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
+#  filter(is.na(x)) ?????????????
+  mutate(homes_powered = weight_tons*500/30) %>% 
+  mutate(which_wheel = "Professor Trash Wheel")
+  
+  # Note that Professor Trash Wheel does not have sports balls as a column
+
+gwyn_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
+                                        sheet = "Gwynnda Trash Wheel",
+                                        range = "A2:L157") %>% 
+  janitor::clean_names() %>% 
+# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
+#  filter(is.na(x)) ?????????????
+  mutate(homes_powered = weight_tons*500/30) %>% 
+  mutate(which_wheel = "Gwynnda Trash Wheel")
+  
+```
+
+Combine datasets into a single, tidy dataset 
+
+```{r}
+# Not sure how to do this because some columns are missing 
+```
+
+<PARAGRAPH ABOUT MR. TRASH WHEEL>
