@@ -121,7 +121,7 @@ The dataset contains the following variables: `r colnames(pols_snp_unemployment_
 
 Mr. Trash Wheel!
 
-```{r q2_mr_trash_wheel}
+```{r q2_import_clean_trash_wheel}
 mr_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
                                         sheet = "Mr. Trash Wheel",
                                         range = "A2:N586") %>% 
@@ -142,6 +142,7 @@ prof_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection 
   
   # Note that Professor Trash Wheel does not have sports balls as a column
 
+# Import and clean Gwynnda
 gwyn_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
                                         sheet = "Gwynnda Trash Wheel",
                                         range = "A2:L157") %>% 
@@ -153,20 +154,18 @@ gwyn_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection 
   
 ```
 
-Combine datasets into a single, tidy dataset 
+Combine datasets into a single, tidy dataset.
 
 ```{r q2_combine}
-# Not sure how to do this because some columns are missing 
+
+# Combine the three datasets
 
 trash_wheel_combined_df <- 
   bind_rows(mr_trash_wheel_df, prof_trash_wheel_df, gwyn_trash_wheel_df)
 
 ```
 
-<PARAGRAPH ABOUT MR. TRASH WHEEL>
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
-
-
+The data contains information on three trash wheels: Mr. Trash Wheel, Professor Trash Wheel, and Gwynnda. There are a total of `r trash_wheel_combined_df %>% summarize(n())` observations. It has information on the following variables: `r colnames(trash_wheel_combined_df)`. This describes the dumpster, date, weight and volume of the trash collected, and some details on what the trash is composed of (plastic bottles, polystrene, cigarette butts, glass bottles, plastic bags, wrappers, and sports balls, although some variables such as `sports_balls` are not available for every trash wheel), as well as the equivalent homes powered, by the formula that each ton of trash equates to on average 500 kilowatts of electricity and that an average household will use 30 kilowatts per day. The total weight of trash collected by Professor Trash Wheel was `r prof_trash_wheel_df %>% summarise(sum(weight_tons))` tons. The total number of cigarettes butts collected by Gwynnda in July of 2021 was `r gwyn_trash_wheel_df %>% filter(year == 2021 & month == "July") %>% summarise(sum(cigarette_butts))`.
 
 
 ## Question 3
@@ -207,14 +206,6 @@ prop_women_apoe4 <- mci_baseline_df %>%
   filter(sex == "female") %>% 
   summarise(mean(apoe4 == "carrier"))
 
-# Alternative method for future reference 
-female_total <- nrow(mci_baseline_df %>% 
-  filter(sex == "female"))
-female_carrier <- nrow(mci_baseline_df %>% 
-  filter(sex == "female") %>%
-  filter(apoe4 == "carrier"))
-prop_women_apoe4_bruteforce <- female_carrier/female_total
-
 ```
 
 Importing baseline data: The original CSV had the first column as the description of the data, so needed to be skipped when imported. The column names were standardized with janitor::cleannames() for easier analysis. Additionally, sex and carrier status were coded using 0 and 1, so that was translated into words (male/female and carrier/noncarrier). Finally, the dataset contained subjects who had MCI at baseline, which is not what we are interested in for this analysis (they do not meet inclusion criteria), so they were filtered out. 
@@ -233,18 +224,16 @@ mci_longitudinal_df <- read_csv("./data/data_mci/mci_amyloid.csv", skip = 1) %>%
                names_to = "timepoint",
                values_to = "ratio")
 
-### MAKE SOME COMMENTS
-
-# In order to explore the overlap of subjects who appear in both datasets, I will use a wide format and inner_join. The longitudinal dataset is in wide format when importing, so I will import it, clean it, but not tidy it, and change the name of the column for study id to match the baseline dataset.
+# In order to explore the overlap of subjects who appear in both datasets, we will use a wide format and inner_join. The longitudinal dataset is in wide format when importing, so we will import it, clean it, but not tidy it, and change the name of the column for study id to match the baseline dataset.
 
 mci_longitudinal_df_wide <- read_csv("./data/data_mci/mci_amyloid.csv", skip = 1) %>%
   janitor::clean_names() %>% 
   rename(id = study_id)
 
-# merge the two dfs
+# Merge the two dfs
 mci_merged_df <- inner_join(mci_baseline_df, mci_longitudinal_df_wide, by = "id")
 
-# count the number of subjects that did not overlap
+# Count the number of subjects that did not overlap
 non_overlap <- anti_join(mci_baseline_df, mci_longitudinal_df_wide, by = "id") %>%
   summarise(n())
 
@@ -261,4 +250,4 @@ write_csv(mci_merged_df_tidy, "./data/data_mci/mci_merged.csv")
 
 Data import and merging: The longitudinal csv is in a wide format, so it was tidyed. However, in order to combine the longitudinal with the baseline df, the wide format was needed and the study_id/id column had to have the same name. Once they were compatible, they were merged over the common subjects using inner_join. The total number of subjects in the baseline df was `r mci_baseline_df %>% summarise(n())`, the total number in the longitudinal df were `r mci_longitudinal_df_wide %>% summarise(n())`, and the total number (overlapping) in the merged df was `r mci_merged_df %>% summarise(n())`. Although `r non_overlap` subjects did not appear in both datasets, the majority overlapped. 
 
-Exported dataset csv: The exported, merged, tidied dataset contains the information from both datasets. It describes `r colnames(mci_merged_df_tidy)`. 
+Exported dataset csv: The exported, merged, tidied dataset contains the information from both datasets. It describes `r colnames(mci_merged_df_tidy)`. This includes the subject study id, their age at baseline, education, whether they are a carrier of APOE4 or not, the age at onset of MCI if applicable, and the amyloid 42/40 ratio at baseline and four time points. It is in a long, tidy form. 
