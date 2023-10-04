@@ -13,7 +13,7 @@ library(tidyverse)
 
 Import and clean data from fivethirtyeight datasets of interest.
 
-```{r}
+```{r q1_fivethirtyeight}
 
 # Import and clean data from fivethirtyeight datasets pols-month
 
@@ -100,7 +100,7 @@ unemployment_df <- read_csv("./data/fivethirtyeight_datasets/unemployment.csv") 
 
 Join the datasets by mergine snp into pols, and merging unemployment into the result.
 
-```{r}
+```{r q1_merge}
 
 # Merge snp_df into pols_df
 
@@ -121,14 +121,15 @@ The dataset contains the following variables: `r colnames(pols_snp_unemployment_
 
 Mr. Trash Wheel!
 
-```{r}
+```{r q2_mr_trash_wheel}
 mr_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
                                         sheet = "Mr. Trash Wheel",
                                         range = "A2:N586") %>% 
   janitor::clean_names() %>% 
 # The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
   mutate(homes_powered = weight_tons*500/30) %>% 
-  mutate(which_wheel = "Mr. Trash Wheel")
+  mutate(which_wheel = "Mr. Trash Wheel") %>%
+  mutate(year = as.numeric(year))
 
 prof_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Data.xlsx", 
                                         sheet = "Professor Trash Wheel",
@@ -154,8 +155,29 @@ gwyn_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection 
 
 Combine datasets into a single, tidy dataset 
 
-```{r}
+```{r q2_combine}
 # Not sure how to do this because some columns are missing 
+
+trash_wheel_combined_df <- 
+  bind_rows(mr_trash_wheel_df, prof_trash_wheel_df, gwyn_trash_wheel_df)
+
 ```
 
 <PARAGRAPH ABOUT MR. TRASH WHEEL>
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+
+
+
+
+## Question 3
+
+Alzheimer's disease (AD) biomarkers and MCI 
+
+Import, clean, and tidy the baseline demographics dataset.
+
+```{r}
+
+mci_baseline_df <- read_csv("./data/data_mci/MCI_baseline.csv")
+
+```
+
