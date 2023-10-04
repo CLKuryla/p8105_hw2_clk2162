@@ -175,9 +175,46 @@ Alzheimer's disease (AD) biomarkers and MCI
 
 Import, clean, and tidy the baseline demographics dataset.
 
-```{r}
+```{r q3_import_tidy_baseline}
 
-mci_baseline_df <- read_csv("./data/data_mci/MCI_baseline.csv")
+mci_baseline_df <- read_csv("./data/data_mci/MCI_baseline.csv", skip = 1) %>% # The first column contains descriptions, so needs to be skipped to enable the column names in the df to be correct
+  janitor::clean_names() %>% 
+  mutate(sex = case_match(sex,
+                          1 ~ "male",
+                          0 ~ "female"
+                          )) %>% 
+  mutate(apoe4 = case_match(apoe4,
+                            1 ~ "carrier",
+                            0 ~ "noncarrier"
+                            )) %>% 
+  filter(!(age_at_onset <= current_age) | age_at_onset == ".") # Filter out subjects who had MCI at baseline
+
+# Number of participants recruited who meet inclusion criteria
+
+num_participants <- mci_baseline_df %>% 
+  filter(age_at_onset > current_age) %>% 
+  summarise(n())
+
+# Number of participants who develop MCI
+
+num_mci <- mci_baseline_df %>% 
+  summarise(mean(current_age))
+
+# Proportion of women who are APOE4 carriers
+
+prop_women_apoe4 <- mci_baseline_df %>% 
+  filter(sex == "female") %>% 
+  summarise(mean(apoe4 == "carrier"))
+
+female_total <- nrow(mci_baseline_df %>% 
+  filter(sex == "female"))
+female_carrier <- nrow(mci_baseline_df %>% 
+  filter(sex == "female") %>%
+  filter(apoe4 == "carrier"))
+prop_women_apoe4_bruteforce <- female_carrier/female_total
 
 ```
 
+Importing baseline data: The original CSV had the first column as the description of the data, so needed to be skipped when imported. The column names were standardized with janitor::cleannames() for easier analysis. Additionally, sex and carrier status were coded using 0 and 1, so that was translated into words (male/female and carrier/noncarrier). Finally, the dataset contained subjects who had MCI at baseline, which is not what we are interested in for this analysis (they do not meet inclusion criteria), so they were filtered out. 
+
+Features of baseline data: After filtering, `r nrow(mci_baseline_df)` subjects met the inclusion criterion of no MCI at baseline, of which `r mci_baseline_df %>% filter(age_at_onset > current_age) %>% summarise(n())` developed MCI. The average baseline age was `r mci_baseline_df %>% summarise(mean(current_age))` years. The proportion of women in the study who are APOE4 carriers is `r prop_women_apoe4` (or `r prop_women_apoe4*100`%).
