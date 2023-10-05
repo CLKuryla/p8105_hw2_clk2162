@@ -126,7 +126,6 @@ mr_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection Da
                                         sheet = "Mr. Trash Wheel",
                                         range = "A2:N586") %>% 
   janitor::clean_names() %>% 
-# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
   mutate(homes_powered = weight_tons*500/30) %>% 
   mutate(which_wheel = "Mr. Trash Wheel") %>%
   mutate(year = as.numeric(year))
@@ -135,8 +134,6 @@ prof_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection 
                                         sheet = "Professor Trash Wheel",
                                         range = "A2:M108") %>% 
   janitor::clean_names() %>% 
-# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
-#  filter(is.na(x)) ?????????????
   mutate(homes_powered = weight_tons*500/30) %>% 
   mutate(which_wheel = "Professor Trash Wheel")
   
@@ -147,8 +144,6 @@ gwyn_trash_wheel_df <- readxl::read_excel("./data/202309 Trash Wheel Collection 
                                         sheet = "Gwynnda Trash Wheel",
                                         range = "A2:L157") %>% 
   janitor::clean_names() %>% 
-# The homework now says to omit rows that do not include dumpster specific data, but I think they all do?
-#  filter(is.na(x)) ?????????????
   mutate(homes_powered = weight_tons*500/30) %>% 
   mutate(which_wheel = "Gwynnda Trash Wheel")
   
